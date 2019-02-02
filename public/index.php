@@ -2,6 +2,7 @@
 use Slim\App;
 use Psr\Http\Message\ServerRequestInterface as Request; // since I don't have a namespace declaration, Psr\Http... is same as \Psr\Http...
 use \Psr\Http\Message\ResponseInterface as Response;
+use slimdemo\src\classes\Constants;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -23,7 +24,7 @@ $container['logger'] = function($c) {
 // Define app routes
 $app->get('/hello/{name}', function (Request $request, Response $response, $args) {
     $this->logger->addInfo('Something interesting happened');
-    return $response->write("Hello " . $args['name']);
+    return $response->write(Constants::FORMALGREETING." my good friend, ".$args['name']);
 });
 
 // Run app
