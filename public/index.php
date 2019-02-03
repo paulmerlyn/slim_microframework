@@ -1,4 +1,5 @@
 <?php
+/* Good documentation at: http://www.slimframework.com/docs/v3/tutorial/first-app.html */
 use Slim\App;
 use Psr\Http\Message\ServerRequestInterface as Request; // since I don't have a namespace declaration, Psr\Http... is same as \Psr\Http...
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -35,6 +36,8 @@ $container['db'] = function ($c) {
     return $pdo;
 };
 
+$container['view'] = new \Slim\Views\PhpRenderer('../templates/');
+
 // Define app routes
 $app->get('/hello/{name}', function (Request $request, Response $response, $args) {
     $this->logger->addInfo('Something interesting happened');
@@ -57,6 +60,24 @@ $app->post('/hello/postform', function (Request $request, Response $response) {
     $filtered_data['title'] = filter_var($data['title'], FILTER_SANITIZE_STRING);
     $filtered_data['description'] = filter_var($data['description'], FILTER_SANITIZE_STRING);
     return $response->write(join(" - ", $filtered_data));
+});
+
+$app->get('/accountsview', function (Request $request, Response $response) {
+    $this->logger->addInfo('Rendering a view from a template');
+    try {
+        if (!$stmt = $this->db->query('SELECT AccountName FROM accounts_table')) {
+            throw new \Exception('error in database');
+        }
+        while ($row = $stmt->fetch()) {
+                $accountNames[] = $row['AccountName'];
+            }
+        $response = $this->view->render($response, 'accountsview.phtml', ['accounts' => $accountNames]);
+        return $response;
+    } 
+    catch(\Exception $e) {
+        $this->logger->addInfo($e->getMessage);
+        return true;
+    }
 });
 
 // Run app
