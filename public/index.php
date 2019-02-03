@@ -51,5 +51,13 @@ $app->get('/users', function (Request $request, Response $response, $args) {
     return $response->write(json_encode($users));
 });
 
+$app->post('/hello/postform', function (Request $request, Response $response) {
+    $data = $request->getParsedBody();
+    $filtered_data = [];
+    $filtered_data['title'] = filter_var($data['title'], FILTER_SANITIZE_STRING);
+    $filtered_data['description'] = filter_var($data['description'], FILTER_SANITIZE_STRING);
+    return $response->write(join(" - ", $filtered_data));
+});
+
 // Run app
 $app->run();
